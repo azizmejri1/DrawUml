@@ -36,6 +36,7 @@ export default function DiagramCreator({
     const url = "http://localhost:8080/diagram/generate";
     const config = {
       headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
     axios
       .post(url, data, config)

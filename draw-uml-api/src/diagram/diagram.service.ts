@@ -5,12 +5,22 @@ import * as plantumlEncoder from 'plantuml-encoder';
 import { DiagramDto } from './diagramDto';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/user/user.entity';
+import { Request } from 'express';
+import { JwtService } from '@nestjs/jwt';
+import { jwtConstants } from 'src/auth/constant';
+import { Diagram } from './diagram.entity';
 
 @Injectable()
 export class DiagramService {
-  constructor(private config: ConfigService) {}
+  constructor(private config: ConfigService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Diagram) private readonly diagramRepository: Repository<Diagram>,
+    private jwtService: JwtService) {}
 
-  async generateUml(diagramDto: DiagramDto): Promise<string> {
+  async generateUml(diagramDto: DiagramDto,req:Request): Promise<string> {
     const { description, type } = diagramDto;
     const prompt =
       'You are a PlantUML generator. Based on the following system description, generate the appropriate UML diagram using PlantUML syntax. The diagram type is:' +
@@ -19,7 +29,7 @@ export class DiagramService {
       description +
       'Output only valid PlantUML code between @startuml and @enduml. Do not add any explanations or markdown syntax.';
     const apiKey = this.config.get<string>('API_KEY');
-
+    const jwt = req.cookies?.jwt;
     try {
       const response = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
@@ -39,12 +49,35 @@ export class DiagramService {
           },
         }
       );
-
+      const imageUrl = await this.addDiagram(response.data.choices[0].message.content);
+      if(jwt){
+          await this.saveDiagram(description,type,jwt,response.data.choices[0].message.content,imageUrl)
+      }
       return await this.addDiagram(response.data.choices[0].message.content);
     } catch (error) {
       console.error('Error:', error);
       throw new Error(`Failed to generate UML diagram: ${error.message}`);
     }
+  }
+
+  async saveDiagram(description:string,type:string,jwt:string,code:string,imageUrl:string){
+      const payload = await this.jwtService.verifyAsync(
+          jwt,
+          {
+            secret: jwtConstants.secret
+          }
+          );
+          const user = await this.userRepository.findOne({ where: { id: payload.sub } });
+          if (!user) {
+            throw new Error("user does not exist");
+          }
+          const diagram = new Diagram();
+          diagram.type = type; 
+          diagram.lastModified = new Date(); 
+          diagram.code = code;
+          diagram.imageUrl = imageUrl;
+          diagram.user = user;
+          this.diagramRepository.save(diagram);
   }
 
   async addDiagram(plantUml: string): Promise<string> {
@@ -80,6 +113,9 @@ export class DiagramService {
 
       // Save SVG to file
       await fs.writeFile(filePath, svgContent);
+
+    
+      
       console.log(fileName);
       return `${fileName}`;
     } catch (error) {

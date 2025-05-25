@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import SignInModal from "./signin-modal";
+import { useRouter } from "next/navigation";
 
 export default function NavBar({
   isLoggedIn,
@@ -11,13 +12,13 @@ export default function NavBar({
   setIsLoggedIn: Dispatch<SetStateAction<boolean>>;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const router = useRouter();
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
 
   const handleProfileClick = () => {
-    alert("Navigate to profile page");
+    router.push("/profile");
   };
 
   return (
