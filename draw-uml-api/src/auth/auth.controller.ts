@@ -22,6 +22,18 @@ export class AuthController {
     }
 
     @UseGuards(AuthGuard)
+    @Post('logout')
+    logout(@Res() res: Response) {
+        res.clearCookie('jwt', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+    });
+
+    res.status(200).send({ message: 'Logged out and cookie cleared' });
+   }
+
+    @UseGuards(AuthGuard)
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;

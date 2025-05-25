@@ -10,6 +10,7 @@ import { jwtConstants } from 'src/auth/constant';
 @Module({
     imports : [TypeOrmModule.forFeature([Diagram]),TypeOrmModule.forFeature([User])],
     controllers: [DiagramController],
-    providers: [DiagramService]
+    providers: [DiagramService],
+    exports:[DiagramService]
 })
 export class DiagramModule {}

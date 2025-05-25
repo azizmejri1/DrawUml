@@ -16,7 +16,7 @@ export default function DeleteAccount({ userId }: { userId: number | null }) {
 
     try {
       setIsDeleting(true);
-      await axios.delete(`http://localhost:8080/user/profile/${userId}`, {
+      await axios.delete(`http://localhost:8080/user/${userId}`, {
         withCredentials: true,
       });
       alert("Account deleted successfully!");

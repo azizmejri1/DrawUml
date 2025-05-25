@@ -23,7 +23,7 @@ export default function ProfileUpdate({
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:8080/user/profile/${userInfo?.id}`,
+        `http://localhost:8080/user/${userInfo?.id}`,
         formData,
         { withCredentials: true }
       );

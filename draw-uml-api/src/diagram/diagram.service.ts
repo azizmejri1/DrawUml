@@ -122,4 +122,23 @@ export class DiagramService {
       throw new Error(`Failed to generate or save diagram: ${error.message}`);
     }
   }
+
+  async getHistoryByUser(id:number){
+    const user = await this.userRepository.findOne({where:{id}});
+    if(!user){
+      throw new Error("user does not exist");
+    }
+    const diagrams = await this.diagramRepository.find({
+      where: { user: { id } },
+      relations: ['user'], 
+    });
+    return diagrams;
+  }
+
+  async deleteDiagramByUser(id:number){
+    await this.diagramRepository.delete({
+      user: { id }
+    });
+
+  }
 }
