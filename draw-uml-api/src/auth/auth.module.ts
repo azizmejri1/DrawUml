@@ -13,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     signOptions: { expiresIn: '24h' },
   }),TypeOrmModule.forFeature([User]),],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService],
+  exports:[AuthService],
 })
 export class AuthModule {}

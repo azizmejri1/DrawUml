@@ -11,14 +11,8 @@ export class AuthController {
 
     @Post("login")
     async login(@Body() loginDto : LoginDto,@Res() res:Response){
-        const userAuth = await this.authService.login(loginDto);
-        res.cookie('jwt', userAuth.access_token, {
-            httpOnly: true,  // Prevents client-side JavaScript access
-            secure: process.env.NODE_ENV === 'production', // Set to true in production
-            sameSite: 'strict', // Prevents CSRF attacks
-            maxAge: 72 * 60 * 60 * 1000, // 1 day expiration
-        });
-        res.send({id:userAuth.id,name:userAuth.name});
+        await this.authService.login(loginDto,res);
+        
     }
 
     @UseGuards(AuthGuard)

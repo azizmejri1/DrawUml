@@ -20,7 +20,7 @@ export default function DeleteAccount({ userId }: { userId: number | null }) {
         withCredentials: true,
       });
       alert("Account deleted successfully!");
-      window.location.href = "/login";
+      window.location.href = "/";
     } catch (err) {
       console.error("Error deleting account:", err);
       alert("Failed to delete account.");

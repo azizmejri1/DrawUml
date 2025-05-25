@@ -7,6 +7,7 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(cookieParser());
+  app.enableCors({ origin: true, credentials: true });
   app.useStaticAssets(join(__dirname, '..', './content'));
   app.enableCors({ origin: true, credentials: true });
   await app.listen(process.env.PORT ?? 8080);

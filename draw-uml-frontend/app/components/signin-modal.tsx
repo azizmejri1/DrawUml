@@ -5,6 +5,7 @@ import axios from "axios";
 interface SignInModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenSignUp: () => void; // New prop to open SignUpModal
   isLoggedIn: boolean;
   setIsLoggedIn: (value: boolean) => void;
 }
@@ -12,6 +13,7 @@ interface SignInModalProps {
 export default function SignInModal({
   isOpen,
   onClose,
+  onOpenSignUp,
   isLoggedIn,
   setIsLoggedIn,
 }: SignInModalProps) {
@@ -119,6 +121,17 @@ export default function SignInModal({
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account yet?{" "}
+            <button
+              onClick={onOpenSignUp}
+              className="text-blue-600 hover:underline"
+            >
+              Sign Up
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
